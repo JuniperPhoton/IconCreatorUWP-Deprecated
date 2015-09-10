@@ -18,18 +18,15 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace IconCreator
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         private StorageFile _oriFile;
 
-        public static List<uint> SizesList = new List<uint>()
+        //TODO: Add your sizes here.
+        private List<uint> SizesList = new List<uint>()
         {
             600,500,300,284,256,225,200,188,176,150,142,107,100,89,88,75,71,66,63,55,50,48,44,24,16
         };
