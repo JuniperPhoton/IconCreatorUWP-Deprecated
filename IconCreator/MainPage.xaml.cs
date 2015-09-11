@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
@@ -36,6 +38,26 @@ namespace IconCreator
             this.InitializeComponent();
         }
 
+        private async void ImageGrid_Drop(object sender, DragEventArgs e)
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                var items = await e.DataView.GetStorageItemsAsync();
+                if (items.Count > 0)
+                {
+                    var storageFile = items[0] as StorageFile;
+                    _oriFile = storageFile;
+                    await ShowImage();
+                }
+            }
+        }
+
+
+        private void Grid_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+        }
+
         private async void AddBtn_Click(object sender, RoutedEventArgs e)
         {
             var picker = new FileOpenPicker();
@@ -46,14 +68,24 @@ namespace IconCreator
             if(pickedFile!= null)
             {
                 _oriFile = pickedFile;
+                await ShowImage();
+            }
+        }
 
-                using (var stream =await pickedFile.OpenStreamForReadAsync())
+        private async Task ShowImage()
+        {
+            using (var stream = await _oriFile.OpenAsync(FileAccessMode.Read))
+            {
+                var decoder = await BitmapDecoder.CreateAsync(stream);
+                if (decoder.PixelWidth != decoder.PixelHeight)
                 {
-                    var bitmap = new BitmapImage();
-                    await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
-
-                    this.PreviewImage.Source = bitmap;
+                    await new MessageDialog("The size ratio of this icon must be 1: 1.", "Alert").ShowAsync();
+                    return;
                 }
+                var bitmap = new BitmapImage();
+                await bitmap.SetSourceAsync(stream);
+
+                this.PreviewImage.Source = bitmap;
             }
         }
 
@@ -61,7 +93,7 @@ namespace IconCreator
         {
             if(_oriFile== null)
             {
-                await new MessageDialog("Please pick a file fist ;-)").ShowAsync();
+                await new MessageDialog("Please pick a file fist ;-)", "Alert").ShowAsync();
                 return;
             }
 
@@ -71,9 +103,8 @@ namespace IconCreator
 
                 foreach (var size in SizesList)
                 {
-                    using (var stream = await _oriFile.OpenAsync(FileAccessMode.ReadWrite))
+                    using (var stream = await _oriFile.OpenAsync(FileAccessMode.Read))
                     {
-                        stream.Seek(0);
                         var decoder = await BitmapDecoder.CreateAsync(stream);
                         
                         var pixels = await decoder.GetPixelDataAsync();
@@ -100,7 +131,7 @@ namespace IconCreator
                         }
                     }
                 }
-                await new MessageDialog($"All saved in {folder.Path} folder").ShowAsync();
+                await new MessageDialog($"All saved in {folder.Path}.", "Congratulations!").ShowAsync();
 
             }
             catch (Exception e1)
@@ -109,5 +140,6 @@ namespace IconCreator
             }
            
         }
+
     }
 }

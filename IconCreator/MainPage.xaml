@@ -13,7 +13,8 @@
             <RowDefinition Height="3*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="1">
+        <Grid x:Name="ImageGrid" AllowDrop="True" Drop="ImageGrid_Drop" DragOver="Grid_DragOver"  Grid.Row="1" Background="{StaticResource BackgrdGrey}">
+            <TextBlock  Text="Please add a .png file by pressing the + button below or Drag &amp; Drop from Explorer." TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0" />
             <Image x:Name="PreviewImage" Width="300" Height="300" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
             
