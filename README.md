@@ -1,4 +1,6 @@
-# IconCreatorForUWP
+# IconCreatorUWP [Deprecated]
+
+Now you can genrate all icons for all scale in Visual Studio 2017.
 
 IconCreator helps you (developers) create icons of you UWP apps.
 
